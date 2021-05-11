@@ -1,0 +1,10 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/weather-test
+    username: postgres
+    password: romiko11
+    driver-class-name: org.postgresql.Driver
+    platform: postgres

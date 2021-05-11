@@ -1,0 +1,60 @@
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'org.jooq:jooq-codegen:3.14.9'
+        classpath 'org.postgresql:postgresql:42.2.19'
+    }
+}
+
+plugins {
+    id 'org.springframework.boot' version '2.4.5'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'java'
+}
+
+group = 'ge.tsu.spring'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    runtimeOnly 'org.postgresql:postgresql'
+    compile 'org.jooq:jooq:3.14.9'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+import org.jooq.codegen.GenerationTool
+import org.jooq.meta.jaxb.*
+
+GenerationTool.generate(new Configuration()
+        .withJdbc(new Jdbc()
+                .withDriver('org.postgresql.Driver')
+                .withUrl('jdbc:postgresql://localhost:5432/weather-test')
+                .withUser('postgres')
+                .withPassword('romiko11'))
+        .withGenerator(new Generator()
+                .withDatabase(new Database()
+                        .withIncludes('.*')
+                        .withExcludes('''UNUSED_TABLE | PREFIX_.* |  SECRET_SCHEMA\\.SECRET_TABLE | SECRET_ROUTINE ''')
+                        .withInputSchema('public'))
+                .withGenerate(new Generate()
+                        .withPojos(true)
+                        .withDaos(true))
+                .withTarget(new Target()
+                        .withPackageName('ge.tsu.spring.lecture6.db')
+                        .withDirectory('/home/romiko/weatherApp/src/main/java'))))
+
+
+test {
+    useJUnitPlatform()
+}
